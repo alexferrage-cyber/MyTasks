@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="My Tasks">
+<meta name="application-name" content="My Tasks">
+<title>My Tasks</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%236366f1'/><stop offset='1' stop-color='%234338ca'/></linearGradient></defs><rect width='100' height='100' rx='24' fill='url(%23g)'/><path d='M28 52 L44 68 L74 34' fill='none' stroke='white' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%236366f1'/><stop offset='1' stop-color='%234338ca'/></linearGradient></defs><rect width='100' height='100' rx='24' fill='url(%23g)'/><path d='M28 52 L44 68 L74 34' fill='none' stroke='white' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+
+  :root {
+    --bg: #f3f4f6;
+    --white: #ffffff;
+    --card-shadow: 0 1px 4px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.06);
+
+    --indigo-50:#eef2ff; --indigo-100:#e0e7ff; --indigo-200:#c7d2fe; --indigo-400:#818cf8; --indigo-500:#6366f1; --indigo-600:#4f46e5; --indigo-700:#4338ca;
+    --mint-50:#ecfdf5; --mint-100:#d1fae5; --mint-500:#10b981; --mint-600:#059669; --mint-700:#047857;
+    --slate-50:#f8fafc; --slate-100:#f1f5f9; --slate-200:#e2e8f0; --slate-300:#cbd5e1; --slate-400:#94a3b8; --slate-500:#64748b; --slate-600:#475569; --slate-700:#334155;
+    --red:#ef4444; --red-dark:#dc2626;
+
+    --status-todo-bg:#fef3c7; --status-todo-text:#92400e;
+    --status-doing-bg:#dbeafe; --status-doing-text:#1e40af;
+    --status-done-bg:#d1fae5; --status-done-text:#065f46;
+
+    --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-pill:100px;
+    --font-display:'Syne',sans-serif; --font-body:'DM Sans',sans-serif;
+  }
+
+  *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+  html { font-size:16px; -webkit-text-size-adjust:100%; }
+  body { font-family:var(--font-body); background:var(--bg); color:var(--slate-700); min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased; }
+
+  /* HEADER */
+  .app-header { background:var(--indigo-600); padding:10px 16px; position:sticky; top:0; z-index:100; box-shadow:0 2px 12px rgba(79,70,229,.3); display:flex; align-items:center; justify-content:space-between; }
+  .app-logo { font-family:var(--font-display); font-size:1.2rem; font-weight:800; color:#fff; letter-spacing:-.5px; display:flex; align-items:center; gap:8px; }
+  .logo-mark { flex-shrink:0; display:block; }
+  .app-logo span { color:var(--indigo-200); }
+  .header-badge { background:rgba(255,255,255,.18); color:#fff; font-size:.62rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:3px 10px; border-radius:var(--radius-pill); border:1px solid rgba(255,255,255,.25); }
+
+  /* TABS */
+  .tabs { position:sticky; top:0; z-index:90; background:var(--white); display:flex; box-shadow:0 1px 6px rgba(0,0,0,.06); }
+  .tab { flex:1; padding:12px 4px; text-align:center; font-family:var(--font-display); font-size:.78rem; font-weight:700; color:var(--slate-400); cursor:pointer; border-bottom:3px solid transparent; -webkit-tap-highlight-color:transparent; transition:color .15s,border-color .15s; display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .tab .tab-ico { font-size:1.1rem; }
+  .tab.active { color:var(--indigo-600); border-bottom-color:var(--indigo-600); }
+  .tab.tab-settings { flex:0 0 48px; }
+  .tab.tab-settings .tab-ico { font-size:1.2rem; }
+
+  /* SETTINGS */
+  .settings-block { background:var(--white); border:1.5px solid var(--slate-200); border-radius:var(--radius-md); padding:16px; box-shadow:var(--card-shadow); margin-bottom:14px; }
+  .settings-label { font-family:var(--font-display); font-size:.82rem; font-weight:700; color:var(--slate-600); margin-bottom:10px; }
+  .settings-row { display:flex; gap:8px; align-items:stretch; }
+  .settings-hint { font-size:.74rem; color:var(--slate-400); margin-top:10px; line-height:1.5; }
+
+  .main { padding:14px 12px; max-width:640px; margin:0 auto; }
+  .page { display:none; }
+  .page.active { display:block; animation:fade .2s ease; }
+  @keyframes fade { from{opacity:0;transform:translateY(4px);} to{opacity:1;transform:none;} }
+
+  /* DASHBOARD */
+  .dashboard { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:16px; }
+  .dash-card { background:var(--white); border-radius:var(--radius-md); padding:12px 10px; box-shadow:var(--card-shadow); display:flex; flex-direction:column; gap:3px; }
+  .dash-card.clickable { cursor:pointer; -webkit-tap-highlight-color:transparent; border:1.5px solid #fecaca; }
+  .dash-card.clickable:active { background:#fef2f2; }
+  .filter-chip { display:flex; align-items:center; gap:8px; background:#fef2f2; border:1.5px solid #fecaca; color:var(--red-dark); font-family:var(--font-display); font-weight:700; font-size:.82rem; padding:8px 14px; border-radius:var(--radius-pill); margin-bottom:14px; }
+  .filter-chip button { margin-left:auto; background:var(--white); border:1px solid #fecaca; color:var(--red-dark); font-family:var(--font-body); font-size:.72rem; font-weight:600; padding:4px 10px; border-radius:var(--radius-pill); cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .dash-num { font-family:var(--font-display); font-size:1.7rem; font-weight:800; color:var(--indigo-600); line-height:1; }
+  .dash-label { font-size:.62rem; font-weight:500; color:var(--slate-500); text-transform:uppercase; letter-spacing:.04em; }
+
+  .section-title { font-family:var(--font-display); font-size:.9rem; font-weight:700; color:var(--slate-600); text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; display:flex; align-items:center; gap:7px; }
+  .section-title .icon { font-size:1rem; }
+  .share-btn { margin-left:auto; background:var(--mint-500); color:#fff; border:none; border-radius:var(--radius-pill); font-family:var(--font-display); font-size:.7rem; font-weight:700; letter-spacing:.02em; padding:5px 12px; cursor:pointer; text-transform:none; -webkit-tap-highlight-color:transparent; }
+  .share-btn:active { background:var(--mint-600); }
+
+  /* TODAY */
+  .today-proj-head { font-family:var(--font-display); font-size:.8rem; font-weight:700; color:var(--slate-500); display:flex; align-items:center; gap:6px; margin:14px 0 6px; }
+  .today-proj-head.important { color:var(--red-dark); font-size:.88rem; }
+  .today-proj-head.admin-head { color:var(--mint-700); margin-top:20px; }
+  .today-proj-head.achat-head { color:#7c3aed; margin-top:20px; }
+  .today-proj-head.clickable { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .today-proj-head .go-arrow { margin-left:auto; color:var(--slate-300); font-size:1.2rem; font-weight:800; }
+  .today-item { position:relative; background:var(--white); border-radius:var(--radius-md); box-shadow:var(--card-shadow); padding:11px 12px; margin-bottom:7px; display:flex; align-items:center; gap:10px; border-left:4px solid var(--indigo-400); touch-action:pan-y; }
+  .today-item.important { border-left-color:var(--red); }
+  .today-item .t-text { flex:1; font-size:.88rem; color:var(--slate-700); }
+  .today-item.important .t-text { color:var(--red-dark); font-weight:600; }
+  /* couleurs par categorie dans l'onglet Jour */
+  .today-item.cat-task  { background:#eef2ff; border-left-color:var(--indigo-400); }
+  .today-item.cat-admin { background:#ecfdf5; border-left-color:var(--mint-500); }
+  .today-item.cat-achat { background:#f5f3ff; border-left-color:#a78bfa; }
+  .today-item.cat-achat .t-text { color:#6d28d9; font-weight:600; }
+  .today-sub { font-size:.68rem; color:var(--slate-400); font-weight:600; white-space:nowrap; }
+  .today-buy-ico { font-size:1rem; flex-shrink:0; width:18px; text-align:center; }
+
+  /* SWIPE TO DELETE */
+  .task-block, .achat-item, .admin-item, .today-item { will-change:transform; }
+  .will-delete { background:#fecaca !important; }
+  .will-delete::after { content:'\1F5D1'; position:absolute; right:14px; top:50%; transform:translateY(-50%); font-size:1.1rem; }
+  .achat-item, .admin-item, .task-block { position:relative; touch-action:pan-y; }
+
+  /* highlight quand on arrive sur un projet depuis l'onglet Jour */
+  .project-card.flash { animation:flashCard 1.5s ease; }
+  @keyframes flashCard { 0%,100%{ box-shadow:var(--card-shadow); } 20%,60%{ box-shadow:0 0 0 3px var(--indigo-400), var(--card-shadow); } }
+
+  /* NEW PROJECT */
+  .new-project-block { background:var(--white); border-radius:var(--radius-md); padding:14px; box-shadow:var(--card-shadow); margin-bottom:20px; }
+  .form-row { display:flex; gap:8px; align-items:stretch; flex-wrap:wrap; }
+  .form-input { flex:1; min-width:120px; border:1.5px solid var(--slate-200); border-radius:var(--radius-sm); padding:10px 12px; font-family:var(--font-body); font-size:.9rem; color:var(--slate-700); background:var(--slate-50); outline:none; -webkit-appearance:none; }
+  .form-input:focus { border-color:var(--indigo-400); background:var(--white); }
+  .form-select { border:1.5px solid var(--slate-200); border-radius:var(--radius-sm); padding:10px 10px; font-family:var(--font-body); font-size:.85rem; color:var(--slate-700); background:var(--slate-50); outline:none; cursor:pointer; -webkit-appearance:none; appearance:none; padding-right:28px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M0 0l6 8 6-8z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 9px center; }
+  .btn-primary { background:var(--indigo-600); color:#fff; border:none; border-radius:var(--radius-sm); padding:10px 18px; font-family:var(--font-display); font-size:.85rem; font-weight:700; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
+  .btn-primary:active { background:var(--indigo-700); }
+
+  /* PROJECT CARDS */
+  .projects-list { display:flex; flex-direction:column; gap:14px; }
+  .project-card { background:var(--white); border-radius:var(--radius-lg); box-shadow:var(--card-shadow); overflow:hidden; border:1.5px solid var(--slate-200); border-left:5px solid var(--slate-200); }
+  .project-card.important { border-left-color:var(--red); }
+  .card-header { padding:14px 14px 12px; display:flex; flex-direction:column; gap:8px; background:var(--indigo-50); border-bottom:1px solid var(--indigo-100); }
+  .project-card.important .card-header { background:#fef2f2; border-bottom-color:#fecaca; }
+  .card-title { font-family:var(--font-display); font-size:1.15rem; font-weight:800; color:var(--indigo-700); letter-spacing:-.3px; word-break:break-word; display:flex; align-items:flex-start; gap:7px; }
+  .project-card.important .card-title { color:var(--red-dark); }
+  .card-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .card-actions { display:flex; align-items:center; gap:4px; margin-left:auto; }
+  .icon-btn.add-inline { background:var(--slate-100); color:var(--indigo-600); font-size:1.15rem; font-weight:700; width:30px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+  .icon-btn.add-inline:active { background:var(--indigo-100); }
+
+  .status-pill { display:inline-block; padding:3px 10px; border-radius:var(--radius-pill); font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; }
+  .status-pill.todo { background:var(--status-todo-bg); color:var(--status-todo-text); }
+  .status-pill.doing { background:var(--status-doing-bg); color:var(--status-doing-text); }
+  .status-pill.done { background:var(--status-done-bg); color:var(--status-done-text); }
+
+  .icon-btn { background:none; border:none; cursor:pointer; border-radius:var(--radius-sm); padding:5px 6px; font-size:1rem; line-height:1; color:var(--slate-400); -webkit-tap-highlight-color:transparent; transition:background .15s,color .15s; }
+  .icon-btn:hover,.icon-btn:active { background:var(--slate-100); color:var(--slate-600); }
+  .icon-btn.danger:hover,.icon-btn.danger:active { background:#fee2e2; color:#b91c1c; }
+  .icon-btn.ai-btn { background:var(--indigo-50); color:var(--indigo-600); border:1px solid var(--indigo-100); font-size:.72rem; padding:4px 9px; border-radius:var(--radius-pill); font-family:var(--font-display); font-weight:700; display:flex; align-items:center; gap:4px; }
+  .icon-btn.ai-btn:hover,.icon-btn.ai-btn:active { background:var(--indigo-100); }
+  .icon-btn.ai-btn.loading { opacity:.6; pointer-events:none; }
+
+  .card-section { padding:10px 14px 12px; border-top:1px solid var(--slate-100); }
+  .card-section-title { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; margin-bottom:8px; display:flex; align-items:center; gap:5px; }
+  .tasks-section .card-section-title { color:var(--slate-500); }
+  .achats-section .card-section-title { color:var(--mint-600); }
+
+  /* IMPORTANCE DOT (no text) */
+  .imp-dot { width:15px; height:15px; border-radius:50%; border:2px solid var(--slate-300); background:transparent; cursor:pointer; flex-shrink:0; -webkit-tap-highlight-color:transparent; transition:background .15s,border-color .15s; }
+  .imp-dot.on { background:var(--red); border-color:var(--red); }
+
+  /* TASKS - discreet */
+  .task-block { padding:6px 0; border-bottom:1px solid var(--slate-100); }
+  .task-block:last-of-type { border-bottom:none; }
+  .task-main { display:flex; align-items:center; gap:9px; }
+  .task-check { width:18px; height:18px; border:2px solid var(--slate-300); border-radius:5px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--white); -webkit-tap-highlight-color:transparent; }
+  .task-check.checked { border-color:var(--indigo-500); background:var(--indigo-500); }
+  .task-check.checked::after { content:''; width:9px; height:5px; border-left:2px solid #fff; border-bottom:2px solid #fff; transform:rotate(-45deg) translateY(-1px); }
+  .task-text { flex:1; font-size:.85rem; font-weight:400; color:var(--slate-600); line-height:1.4; word-break:break-word; }
+  .task-text.done { text-decoration:line-through; color:var(--slate-400); }
+  .sub-count { font-size:.68rem; color:var(--slate-400); font-weight:600; white-space:nowrap; }
+  .star-btn { font-size:1rem; line-height:1; color:var(--slate-300); cursor:pointer; padding:2px 4px; flex-shrink:0; -webkit-tap-highlight-color:transparent; transition:color .15s,transform .1s; }
+  .star-btn.on { color:#f59e0b; }
+  .star-btn:active { transform:scale(1.3); }
+  .today-subs { margin:-2px 0 8px 30px; }
+  .task-tools { display:flex; align-items:center; gap:1px; flex-shrink:0; }
+  .mini-btn { background:none; border:none; color:var(--slate-300); font-size:.8rem; cursor:pointer; padding:3px 4px; border-radius:4px; line-height:1; -webkit-tap-highlight-color:transparent; }
+  .mini-btn:active { background:var(--slate-100); color:var(--slate-600); }
+  .mini-btn.del:active { color:#b91c1c; }
+
+  /* NOTE */
+  .note-display { margin:5px 0 2px 29px; font-size:.76rem; font-style:italic; color:var(--slate-500); padding:4px 9px; background:var(--slate-50); border-left:2px solid var(--slate-200); border-radius:0 6px 6px 0; cursor:pointer; }
+
+  /* SUBTASKS - discreet */
+  .subtasks { margin:5px 0 2px 29px; }
+  .sub-item { display:flex; align-items:center; gap:7px; padding:2px 0; }
+  .sub-check { width:14px; height:14px; border:1.5px solid var(--slate-300); border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--white); -webkit-tap-highlight-color:transparent; }
+  .sub-check.checked { border-color:var(--mint-500); background:var(--mint-500); }
+  .sub-check.checked::after { content:''; width:6px; height:3px; border-left:1.5px solid #fff; border-bottom:1.5px solid #fff; transform:rotate(-45deg) translateY(-1px); }
+  .sub-text { flex:1; font-size:.76rem; font-weight:400; color:var(--slate-500); }
+  .sub-text.done { text-decoration:line-through; color:var(--slate-300); }
+  .sub-del { color:var(--slate-300); font-size:.7rem; cursor:pointer; padding:2px; -webkit-tap-highlight-color:transparent; }
+  .sub-del:active { color:#b91c1c; }
+
+  /* ACHATS */
+  .achat-item { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--slate-100); }
+  .achat-item:last-of-type { border-bottom:none; }
+  .achat-name { flex:1; font-size:.85rem; color:var(--slate-700); word-break:break-word; }
+  .achat-name.important { color:var(--red-dark); font-weight:600; }
+  .achat-qty { font-size:.75rem; color:var(--slate-400); font-weight:500; white-space:nowrap; }
+  .achat-status { font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; padding:2px 7px; border-radius:var(--radius-pill); cursor:pointer; -webkit-tap-highlight-color:transparent; white-space:nowrap; flex-shrink:0; }
+  .achat-status.abuy { background:#fef3c7; color:#92400e; }
+  .achat-status.ordered { background:#dbeafe; color:#1e40af; }
+  .achat-status.received { background:var(--mint-100); color:var(--mint-700); }
+  .achat-del { color:var(--slate-300); font-size:.8rem; cursor:pointer; padding:3px; -webkit-tap-highlight-color:transparent; }
+  .achat-del:active { color:#b91c1c; }
+
+  /* ADD : un seul + par projet, avec choix Tache/Achat */
+  .add-bar { padding:10px 14px; background:var(--slate-50); border-top:1px solid var(--slate-100); border-bottom:1px solid var(--slate-100); display:flex; align-items:center; gap:8px; }
+  .add-bar.choice { gap:8px; }
+  .add-plus { width:30px; height:30px; border-radius:50%; border:1.5px dashed var(--slate-300); background:transparent; color:var(--slate-400); font-size:1.2rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+  .add-plus:active { background:var(--indigo-50); color:var(--indigo-600); border-color:var(--indigo-400); }
+  .choice-btn { border:none; border-radius:var(--radius-pill); font-family:var(--font-display); font-size:.8rem; font-weight:700; padding:8px 16px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .choice-btn.task { background:var(--indigo-100); color:var(--indigo-700); }
+  .choice-btn.achat { background:var(--mint-100); color:var(--mint-700); }
+  .choice-btn.cancel { background:var(--slate-100); color:var(--slate-500); padding:8px 12px; margin-left:auto; }
+  .add-line { display:flex; align-items:center; gap:7px; flex:1; }
+  .add-tag { font-size:1.05rem; flex-shrink:0; }
+  .add-input2 { flex:1; min-width:0; border:none; border-bottom:2px solid var(--indigo-400); background:transparent; font-family:var(--font-body); font-size:.88rem; color:var(--slate-700); padding:5px 2px; outline:none; -webkit-appearance:none; }
+  .add-input2.mint { border-bottom-color:var(--mint-500); }
+  .add-input2::placeholder { color:var(--slate-300); }
+  .add-qty2 { width:46px; flex:0 0 46px; border:none; border-bottom:2px solid var(--mint-500); background:transparent; font-size:.82rem; color:var(--slate-600); padding:5px 2px; outline:none; text-align:center; -webkit-appearance:none; }
+  .add-go { background:none; border:none; color:var(--indigo-600); font-size:1.25rem; cursor:pointer; padding:2px 6px; line-height:1; -webkit-tap-highlight-color:transparent; flex-shrink:0; }
+  .add-go.mint { color:var(--mint-600); }
+  .add-go.cancel { color:var(--slate-300); font-size:1rem; }
+  .empty-mini { font-size:.78rem; color:var(--slate-300); font-style:italic; padding:2px 0; }
+
+  /* AI MSG */
+  .ai-msg { font-size:.75rem; padding:6px 10px; border-radius:var(--radius-sm); margin:0 14px 6px; display:none; }
+  .ai-msg.show { display:block; }
+  .ai-msg.error { background:#fee2e2; color:#b91c1c; }
+  .ai-msg.success { background:var(--mint-50); color:var(--mint-700); }
+  .ai-msg.loading { background:var(--indigo-50); color:var(--indigo-700); }
+
+  /* MODAL */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s; }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal-sheet { background:var(--white); border-radius:20px 20px 0 0; padding:20px 16px 36px; width:100%; max-width:640px; transform:translateY(40px); transition:transform .25s ease; }
+  .modal-overlay.open .modal-sheet { transform:translateY(0); }
+  .modal-title { font-family:var(--font-display); font-size:1rem; font-weight:800; margin-bottom:14px; color:var(--slate-700); }
+  .modal-actions { display:flex; gap:8px; margin-top:14px; }
+  .btn-cancel { flex:1; background:var(--slate-100); color:var(--slate-600); border:none; border-radius:var(--radius-sm); padding:11px; font-family:var(--font-display); font-size:.85rem; font-weight:700; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .btn-confirm { flex:2; background:var(--indigo-600); color:#fff; border:none; border-radius:var(--radius-sm); padding:11px; font-family:var(--font-display); font-size:.85rem; font-weight:700; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .btn-confirm:active { background:var(--indigo-700); }
+
+  .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--slate-700); color:#fff; font-size:.82rem; font-weight:500; padding:10px 18px; border-radius:var(--radius-pill); z-index:300; transition:transform .25s ease,opacity .25s; opacity:0; white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+  .empty-state { text-align:center; padding:24px 16px; color:var(--slate-400); font-size:.85rem; }
+  .empty-state .emoji { font-size:2.5rem; display:block; margin-bottom:8px; }
+
+  .achat-group { background:var(--white); border-radius:var(--radius-md); box-shadow:var(--card-shadow); padding:12px 14px; margin-bottom:12px; }
+
+  /* ADMIN */
+  .admin-block { background:var(--white); border-radius:var(--radius-lg); box-shadow:var(--card-shadow); overflow:hidden; }
+  .admin-item { display:flex; align-items:center; gap:9px; padding:11px 14px; border-bottom:1px solid var(--slate-100); border-left:4px solid transparent; }
+  .admin-item:last-child { border-bottom:none; }
+  .admin-item.important { border-left-color:var(--red); background:#fef2f2; }
+  .admin-main { flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+  .admin-name { font-size:.9rem; font-weight:500; color:var(--slate-700); word-break:break-word; }
+  .admin-name.done { text-decoration:line-through; color:var(--slate-400); }
+  .admin-item.important .admin-name { color:var(--red-dark); font-weight:600; }
+  .admin-due { font-size:.68rem; font-weight:600; padding:2px 8px; border-radius:var(--radius-pill); align-self:flex-start; cursor:pointer; }
+  .admin-due.due-ok { background:var(--slate-100); color:var(--slate-500); }
+  .admin-due.due-soon { background:#fef3c7; color:#92400e; }
+  .admin-due.due-late { background:#fee2e2; color:#b91c1c; }
+  .admin-add-hint { font-size:.8rem; color:var(--slate-400); }
+  .achat-group-title { font-family:var(--font-display); font-size:.85rem; font-weight:700; color:var(--slate-600); margin-bottom:6px; }
+
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-thumb { background:var(--slate-200); border-radius:4px; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-logo">
+    <svg class="logo-mark" viewBox="0 0 100 100" width="24" height="24"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a5b4fc"/><stop offset="1" stop-color="#ffffff"/></linearGradient></defs><rect width="100" height="100" rx="24" fill="rgba(255,255,255,.18)"/><path d="M28 52 L44 68 L74 34" fill="none" stroke="url(#lg)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    My <span>Tasks</span>
+  </div>
+  <span class="header-badge">v7.2</span>
+</header>
+
+<nav class="tabs">
+  <div class="tab active" id="tab-today" onclick="switchTab('today')"><span class="tab-ico">&#11088;</span>Jour</div>
+  <div class="tab" id="tab-projects" onclick="openProjectsTab()"><span class="tab-ico">&#128203;</span>Projets</div>
+  <div class="tab" id="tab-admin" onclick="switchTab('admin')"><span class="tab-ico">&#128204;</span>Admin</div>
+  <div class="tab" id="tab-achats" onclick="switchTab('achats')"><span class="tab-ico">&#128722;</span>Achats</div>
+  <div class="tab tab-settings" id="tab-settings" onclick="switchTab('settings')"><span class="tab-ico">&#9881;&#65039;</span></div>
+</nav>
+
+<main class="main">
+  <section class="page active" id="page-today">
+    <div class="dashboard" id="dashboard"></div>
+    <div class="section-title"><span class="icon">&#11088;</span> Mon programme du jour</div>
+    <div id="todayList"></div>
+  </section>
+
+  <section class="page" id="page-projects">
+    <div class="section-title"><span class="icon">&#127959;&#65039;</span> Nouveau projet</div>
+    <div class="new-project-block">
+      <div class="form-row">
+        <input type="text" class="form-input" id="newProjectName" placeholder="Nom du projet (ex: Dressing...)">
+        <select class="form-select" id="newProjectStatus">
+          <option value="todo">A faire</option>
+          <option value="doing" selected>En cours</option>
+          <option value="done">Termine</option>
+        </select>
+        <button class="btn-primary" onclick="addProject()">+ Creer</button>
+      </div>
+    </div>
+    <div class="section-title"><span class="icon">&#128203;</span> Tous les projets</div>
+    <div class="projects-list" id="projectsList"></div>
+  </section>
+
+  <section class="page" id="page-admin">
+    <div class="section-title"><span class="icon">&#128204;</span> Taches administratives</div>
+    <div class="admin-block">
+      <div id="adminList"></div>
+      <div id="adminAddArea"></div>
+    </div>
+  </section>
+
+  <section class="page" id="page-achats">
+    <div class="section-title"><span class="icon">&#128722;</span> Liste de courses
+      <button class="share-btn" onclick="shareShoppingList()">&#128228; Partager</button>
+    </div>
+    <div id="achatsList"></div>
+  </section>
+
+  <section class="page" id="page-settings">
+    <div class="section-title"><span class="icon">&#9881;&#65039;</span> Reglages</div>
+    <div class="settings-block">
+      <div class="settings-label">Cle API Google (pour l'aide IA)</div>
+      <div class="settings-row">
+        <input type="password" class="form-input" id="apiKeyInput" placeholder="AIza..." autocomplete="off" spellcheck="false">
+        <button class="btn-primary" onclick="saveApiKey()">Sauver</button>
+      </div>
+      <div class="settings-hint">Votre cle reste sur cet appareil uniquement. Obtenez-la sur aistudio.google.com/apikey</div>
+    </div>
+    <div class="settings-block">
+      <div class="settings-label">A propos</div>
+      <div class="settings-hint">My Tasks &mdash; vos donnees sont stockees localement dans ce navigateur.</div>
+    </div>
+  </section>
+</main>
+
+<div class="modal-overlay" id="editModal">
+  <div class="modal-sheet">
+    <div class="modal-title">&#9999;&#65039; Modifier le projet</div>
+    <input type="hidden" id="editProjectId">
+    <div class="form-row" style="flex-direction:column; gap:10px;">
+      <input type="text" class="form-input" id="editProjectName" placeholder="Nom du projet">
+      <select class="form-select" id="editProjectStatus" style="width:100%;">
+        <option value="todo">A faire</option>
+        <option value="doing">En cours</option>
+        <option value="done">Termine</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-confirm" onclick="saveEdit()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<input type="date" id="datePicker" style="position:fixed; left:-9999px; opacity:0; pointer-events:none;">
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ===== STORAGE ===== */
+  function loadData() {
+    try { var raw = localStorage.getItem('chantierPro_v1'); if (!raw) return { projects: [] }; return JSON.parse(raw); }
+    catch(e) { return { projects: [] }; }
+  }
+  function saveData(data) { try { localStorage.setItem('chantierPro_v1', JSON.stringify(data)); } catch(e) {} }
+  function getApiKey() { try { return localStorage.getItem('chantierPro_apiKey') || ''; } catch(e) { return ''; } }
+  function saveApiKey() {
+    try { var k = document.getElementById('apiKeyInput').value.trim(); localStorage.setItem('chantierPro_apiKey', k); showToast('Cle API sauvegardee'); }
+    catch(e) { showToast('Erreur de sauvegarde'); }
+  }
+  window.saveApiKey = saveApiKey;
+
+  var db = loadData();
+  var currentTab = 'today';
+  var uiOpen = {};        // inputs d'ajout ouverts
+  var lastFocusId = null; // input a refocaliser apres render
+  var pendingDueId = null; // tache admin en cours d'edition de date
+  var projectFilter = 'all'; // 'all' ou 'important' pour l'onglet Projets
+
+  function generateId() { return 'id_' + Date.now() + '_' + Math.floor(Math.random() * 100000); }
+
+  /* ===== MIGRATION ===== */
+  function migrate() {
+    try {
+      db.projects = db.projects || [];
+      db.admin = db.admin || [];
+      db.admin.forEach(function(a) {
+        if (!a.id) a.id = generateId();
+        if (typeof a.done !== 'boolean') a.done = false;
+        if (typeof a.star !== 'boolean') a.star = false;
+        if (typeof a.important !== 'boolean') a.important = false;
+        if (typeof a.due !== 'string') a.due = '';
+      });
+      db.projects.forEach(function(p) {
+        if (!p.id) p.id = generateId();
+        if (typeof p.important !== 'boolean') p.important = false;
+        if (!p.tasks) p.tasks = [];
+        if (!p.purchases) p.purchases = [];
+        p.tasks.forEach(function(t) {
+          if (!t.id) t.id = generateId();
+          if (typeof t.done !== 'boolean') t.done = false;
+          if (typeof t.star !== 'boolean') t.star = false;
+          // ancien systeme "priority" -> nouveau booleen "important"
+          if (typeof t.important !== 'boolean') t.important = (t.priority === 'high');
+          if (typeof t.note !== 'string') t.note = '';
+          if (!t.subtasks) t.subtasks = [];
+          t.subtasks.forEach(function(s) {
+            if (!s.id) s.id = generateId();
+            if (typeof s.done !== 'boolean') s.done = false;
+          });
+        });
+        p.purchases.forEach(function(a) {
+          if (!a.id) a.id = generateId();
+          if (typeof a.important !== 'boolean') a.important = false;
+          if (!a.status) a.status = 'abuy';
+          if (!a.qty) a.qty = 1;
+        });
+      });
+      saveData(db);
+    } catch(e) {}
+  }
+
+  /* ===== HELPERS ===== */
+  function statusLabel(s) { return ({ todo:'A faire', doing:'En cours', done:'Termine' })[s] || s; }
+  function statusEmoji(s) { return s === 'doing' ? '\u23F3' : (s === 'todo' ? '\uD83D\uDC49' : '\u2705'); }
+  function safeText(str) { var d = document.createElement('div'); d.appendChild(document.createTextNode(str || '')); return d.innerHTML; }
+  function findProject(id) { try { return (db.projects || []).find(function(p){ return p.id === id; }) || null; } catch(e) { return null; } }
+  function findTask(p, tid) { try { return (p.tasks || []).find(function(t){ return t.id === tid; }) || null; } catch(e) { return null; } }
+
+  /* ===== TOAST ===== */
+  var toastTimer = null;
+  function showToast(msg) {
+    try { var el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2400); } catch(e) {}
+  }
+
+  /* ===== TABS ===== */
+  function switchTab(tab) {
+    try {
+      currentTab = tab;
+      ['today','projects','admin','achats','settings'].forEach(function(t) {
+        var pg = document.getElementById('page-' + t); var bt = document.getElementById('tab-' + t);
+        if (pg) pg.classList.toggle('active', t === tab);
+        if (bt) bt.classList.toggle('active', t === tab);
+      });
+      window.scrollTo(0, 0); render();
+    } catch(e) {}
+  }
+  window.switchTab = switchTab;
+
+  /* ===== ADD (un seul + par projet : Tache ou Achat) ===== */
+  // uiOpen[pid] peut valoir : undefined (ferme), 'choice', 'task', 'achat'
+  function openChoice(pid) { try { uiOpen[pid] = 'choice'; render(); } catch(e) {} }
+  window.openChoice = openChoice;
+  function chooseAdd(pid, type) { try { uiOpen[pid] = type; lastFocusId = 'add-' + type + '-' + pid; render(); } catch(e) {} }
+  window.chooseAdd = chooseAdd;
+  function closeAdd(pid) { try { delete uiOpen[pid]; render(); } catch(e) {} }
+  window.closeAdd = closeAdd;
+
+  function addItem(type, pid) {
+    try {
+      var p = findProject(pid); if (!p) return;
+      if (type === 'task') {
+        var inp = document.getElementById('add-task-' + pid); if (!inp) return;
+        var v = (inp.value || '').trim();
+        if (!v) { closeAdd(pid); return; }
+        p.tasks.push({ id: generateId(), name: v, done: false, star: false, important: false, note: '', subtasks: [] });
+        saveData(db); uiOpen[pid] = 'task'; lastFocusId = 'add-task-' + pid; render();
+      } else if (type === 'achat') {
+        var ni = document.getElementById('add-achat-' + pid); if (!ni) return;
+        var nv = (ni.value || '').trim();
+        if (!nv) { closeAdd(pid); return; }
+        var qi = document.getElementById('addqty-achat-' + pid);
+        var q = parseInt((qi && qi.value) || '1', 10); if (isNaN(q) || q < 1) q = 1;
+        p.purchases.push({ id: generateId(), name: nv, qty: q, status: 'abuy', important: false });
+        saveData(db); uiOpen[pid] = 'achat'; lastFocusId = 'add-achat-' + pid; render();
+      }
+    } catch(e) { showToast('Erreur ajout'); }
+  }
+  window.addItem = addItem;
+
+  function handleAddEnter(event, type, pid) {
+    try { if (event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); addItem(type, pid); } } catch(e) {}
+  }
+  window.handleAddEnter = handleAddEnter;
+
+  // Zone de saisie (apparait sous l'entete quand on touche le +)
+  function addAreaHTML(pid) {
+    var state = uiOpen[pid];
+    if (!state) return '';
+    if (state === 'choice') {
+      return '<div class="add-bar choice">' +
+        '<button class="choice-btn task" onclick="chooseAdd(\'' + pid + '\',\'task\')">\uD83D\uDCCB Tache</button>' +
+        '<button class="choice-btn achat" onclick="chooseAdd(\'' + pid + '\',\'achat\')">\uD83D\uDED2 Achat</button>' +
+        '<button class="choice-btn cancel" onclick="closeAdd(\'' + pid + '\')">\u2715</button>' +
+      '</div>';
+    }
+    if (state === 'task') {
+      return '<div class="add-bar"><div class="add-line">' +
+        '<span class="add-tag">\uD83D\uDCCB</span>' +
+        '<input type="text" id="add-task-' + pid + '" class="add-input2" placeholder="Nom de la tache..." onkeydown="handleAddEnter(event,\'task\',\'' + pid + '\')">' +
+        '<button class="add-go" onclick="addItem(\'task\',\'' + pid + '\')">+</button>' +
+        '<button class="add-go cancel" onclick="closeAdd(\'' + pid + '\')">\u2715</button>' +
+      '</div></div>';
+    }
+    // achat
+    return '<div class="add-bar"><div class="add-line">' +
+      '<span class="add-tag">\uD83D\uDED2</span>' +
+      '<input type="text" id="add-achat-' + pid + '" class="add-input2 mint" placeholder="Nom de l\'article..." onkeydown="handleAddEnter(event,\'achat\',\'' + pid + '\')">' +
+      '<input type="number" id="addqty-achat-' + pid + '" class="add-qty2" min="1" value="1">' +
+      '<button class="add-go mint" onclick="addItem(\'achat\',\'' + pid + '\')">+</button>' +
+      '<button class="add-go cancel" onclick="closeAdd(\'' + pid + '\')">\u2715</button>' +
+    '</div></div>';
+  }
+
+  /* ===== DASHBOARD ===== */
+  function renderDashboard() {
+    try {
+      var projects = db.projects || [];
+      var active = projects.filter(function(p){ return p.status !== 'done'; }).length;
+      var remaining = 0, impProj = 0;
+      projects.forEach(function(p) {
+        if (p.important && p.status !== 'done') impProj++;
+        (p.tasks || []).forEach(function(t){ if (!t.done) remaining++; });
+      });
+      document.getElementById('dashboard').innerHTML =
+        '<div class="dash-card"><div class="dash-num">' + active + '</div><div class="dash-label">Projets actifs</div></div>' +
+        '<div class="dash-card"><div class="dash-num">' + remaining + '</div><div class="dash-label">Taches restantes</div></div>' +
+        '<div class="dash-card clickable" onclick="showImportantProjects()"><div class="dash-num" style="color:var(--red);">' + impProj + '</div><div class="dash-label">Projets importants</div></div>';
+    } catch(e) {}
+  }
+
+  /* ===== TODAY (taches etoilees = programme du jour) ===== */
+  function renderToday() {
+    try {
+      var el = document.getElementById('todayList');
+      var projects = (db.projects || []).filter(function(p){ return p.status !== 'done'; });
+      projects.sort(function(a, b){ return (b.important ? 1 : 0) - (a.important ? 1 : 0); });
+      var html = '', any = false;
+      projects.forEach(function(p) {
+        var starred = (p.tasks || []).filter(function(t){ return t.star && !t.done; });
+        if (!starred.length) return;
+        any = true;
+        html += '<div class="today-proj-head clickable ' + (p.important ? 'important' : '') + '" onclick="goToProject(\'' + p.id + '\')">' + (p.important ? '\uD83D\uDD34 ' : statusEmoji(p.status) + ' ') + safeText(p.name) + ' <span class="go-arrow">\u203A</span></div>';
+        starred.forEach(function(t) {
+          html += '<div class="today-item cat-task" data-swipe="task" data-pid="' + p.id + '" data-tid="' + t.id + '">' +
+            '<div class="task-check" onclick="toggleTask(\'' + p.id + '\',\'' + t.id + '\')"></div>' +
+            '<div class="t-text">' + safeText(t.name) + '</div>' +
+          '</div>';
+        });
+      });
+      var hasProjectTasks = any;
+
+      // Taches admin etoilees OU importantes (non faites)
+      var adminHtml = '';
+      (db.admin || []).forEach(function(a) {
+        if (a.done) return;
+        if (!a.star && !a.important) return;
+        var di = dueInfo(a.due);
+        var dueHtml = di ? '<span class="admin-due ' + di.cls + '">' + di.label + '</span>' : '';
+        adminHtml += '<div class="today-item cat-admin ' + (a.important ? 'important' : '') + '" data-swipe="admin" data-aid="' + a.id + '">' +
+          '<div class="task-check" onclick="toggleAdmin(\'' + a.id + '\')"></div>' +
+          '<div class="t-text">' + safeText(a.name) + '</div>' + dueHtml +
+        '</div>';
+      });
+      if (adminHtml) {
+        html += '<div class="today-proj-head admin-head">\uD83D\uDCCC Admin</div>' + adminHtml;
+      }
+
+      // Achats importants (mauve) de tous les projets non termines
+      var impAchats = '';
+      (db.projects || []).forEach(function(p) {
+        if (p.status === 'done') return;
+        (p.purchases || []).forEach(function(a) {
+          if (!a.important || a.status === 'received') return;
+          impAchats += '<div class="today-item cat-achat" data-swipe="achat" data-pid="' + p.id + '" data-aid="' + a.id + '">' +
+            '<span class="today-buy-ico">\uD83D\uDED2</span>' +
+            '<div class="t-text">' + safeText(a.name) + '</div>' +
+            '<span class="today-sub">x' + (a.qty || 1) + '</span>' +
+          '</div>';
+        });
+      });
+      if (impAchats) {
+        html += '<div class="today-proj-head achat-head">\uD83D\uDED2 Achats importants</div>' + impAchats;
+      }
+
+      if (!hasProjectTasks && !adminHtml && !impAchats) {
+        html = '<div class="empty-state"><span class="emoji">\u2B50</span>Aucune tache au programme.<br>Touchez l\'etoile d\'une tache pour la mettre ici.</div>';
+      }
+
+      el.innerHTML = html;
+    } catch(e) {}
+  }
+
+  /* ===== PROJECTS ===== */
+  function renderProjects() {
+    try {
+      var el = document.getElementById('projectsList');
+      var projects = db.projects || [];
+      if (!projects.length) { el.innerHTML = '<div class="empty-state"><span class="emoji">\uD83C\uDFD7\uFE0F</span>Aucun projet pour l\'instant.<br>Creez votre premier projet ci-dessus !</div>'; return; }
+
+      var chip = '';
+      if (projectFilter === 'important') {
+        chip = '<div class="filter-chip">\uD83D\uDD34 Projets importants <button onclick="clearProjectFilter()">Tout afficher \u2715</button></div>';
+        projects = projects.filter(function(p){ return p.important; });
+      }
+      var html = chip;
+      if (!projects.length) {
+        html += '<div class="empty-state"><span class="emoji">\uD83D\uDD34</span>Aucun projet important.<br>Touchez la pastille d\'un projet pour le marquer.</div>';
+      } else {
+        projects.forEach(function(p){ html += renderProjectCard(p); });
+      }
+      el.innerHTML = html;
+    } catch(e) {}
+  }
+  function openProjectsTab() { try { projectFilter = 'all'; switchTab('projects'); } catch(e) {} }
+  window.openProjectsTab = openProjectsTab;
+  function showImportantProjects() { try { projectFilter = 'important'; switchTab('projects'); } catch(e) {} }
+  window.showImportantProjects = showImportantProjects;
+  function clearProjectFilter() { try { projectFilter = 'all'; render(); } catch(e) {} }
+  window.clearProjectFilter = clearProjectFilter;
+
+  function renderTask(p, t, index, total) {
+    try {
+      var noteHtml = t.note ? '<div class="note-display" onclick="openNote(\'' + p.id + '\',\'' + t.id + '\')">\uD83D\uDCDD ' + safeText(t.note) + '</div>' : '';
+
+      return '<div class="task-block" data-swipe="task" data-pid="' + p.id + '" data-tid="' + t.id + '">' +
+        '<div class="task-main">' +
+          '<div class="task-check ' + (t.done ? 'checked' : '') + '" onclick="toggleTask(\'' + p.id + '\',\'' + t.id + '\')"></div>' +
+          '<div class="task-text ' + (t.done ? 'done' : '') + '">' + safeText(t.name) + '</div>' +
+          '<div class="star-btn ' + (t.star ? 'on' : '') + '" onclick="toggleStar(\'' + p.id + '\',\'' + t.id + '\')">\u2605</div>' +
+          '<div class="task-tools">' +
+            '<button class="mini-btn" onclick="moveTask(\'' + p.id + '\',\'' + t.id + '\',-1)" ' + (index === 0 ? 'style="opacity:.25"' : '') + '>\u25B2</button>' +
+            '<button class="mini-btn" onclick="moveTask(\'' + p.id + '\',\'' + t.id + '\',1)" ' + (index === total - 1 ? 'style="opacity:.25"' : '') + '>\u25BC</button>' +
+            '<button class="mini-btn" onclick="openNote(\'' + p.id + '\',\'' + t.id + '\')">\uD83D\uDCDD</button>' +
+            '<button class="mini-btn del" onclick="deleteTask(\'' + p.id + '\',\'' + t.id + '\')">\u2715</button>' +
+          '</div>' +
+        '</div>' + noteHtml +
+      '</div>';
+    } catch(e) { return ''; }
+  }
+
+  function renderProjectCard(p) {
+    try {
+      var statusClass = ({ todo:'todo', doing:'doing', done:'done' })[p.status] || 'todo';
+      var tasks = p.tasks || [], achats = p.purchases || [];
+
+      var tasksHtml = '';
+      tasks.forEach(function(t, i){ tasksHtml += renderTask(p, t, i, tasks.length); });
+      if (!tasks.length) tasksHtml = '<div class="empty-mini">Aucune tache</div>';
+
+      var achatsHtml = '';
+      achats.forEach(function(a, i) {
+        var cls = ({ abuy:'abuy', ordered:'ordered', received:'received' })[a.status] || 'abuy';
+        var lbl = ({ abuy:'A acheter', ordered:'Commande', received:'Recu' })[a.status] || 'A acheter';
+        achatsHtml += '<div class="achat-item" data-swipe="achat" data-pid="' + p.id + '" data-aid="' + a.id + '">' +
+          '<div class="achat-name ' + (a.important ? 'important' : '') + '">' + safeText(a.name) + '</div>' +
+          '<div class="achat-qty">x' + (a.qty || 1) + '</div>' +
+          '<div class="imp-dot ' + (a.important ? 'on' : '') + '" onclick="toggleAchatImp(\'' + p.id + '\',' + i + ')"></div>' +
+          '<span class="achat-status ' + cls + '" onclick="cycleAchatStatus(\'' + p.id + '\',' + i + ')">' + lbl + '</span>' +
+          '<span class="achat-del" onclick="deleteAchat(\'' + p.id + '\',' + i + ')">\u2715</span>' +
+        '</div>';
+      });
+      if (!achats.length) achatsHtml = '<div class="empty-mini">Aucun achat</div>';
+
+      return '<div class="project-card ' + (p.important ? 'important' : '') + '" id="card-' + p.id + '">' +
+        '<div class="card-header">' +
+          '<div class="card-title">' +
+            '<div class="imp-dot ' + (p.important ? 'on' : '') + '" onclick="toggleProjImp(\'' + p.id + '\')"></div>' +
+            safeText(p.name) +
+          '</div>' +
+          '<div class="card-bar">' +
+            '<span class="status-pill ' + statusClass + '" onclick="cycleStatus(\'' + p.id + '\')">' + statusLabel(p.status) + '</span>' +
+            '<div class="card-actions">' +
+              '<button class="icon-btn add-inline" onclick="openChoice(\'' + p.id + '\')">+</button>' +
+              '<button class="icon-btn ai-btn" id="ai-btn-' + p.id + '" onclick="callAI(\'' + p.id + '\')">\uD83E\uDE84 IA</button>' +
+              '<button class="icon-btn" onclick="openEdit(\'' + p.id + '\')">\u270F\uFE0F</button>' +
+              '<button class="icon-btn danger" onclick="deleteProject(\'' + p.id + '\')">\u2715</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div id="ai-msg-' + p.id + '" class="ai-msg"></div>' +
+        addAreaHTML(p.id) +
+        '<div class="card-section tasks-section">' +
+          '<div class="card-section-title">\uD83D\uDCCB Taches (' + tasks.filter(function(t){return t.done;}).length + '/' + tasks.length + ')</div>' +
+          tasksHtml +
+        '</div>' +
+        '<div class="card-section achats-section">' +
+          '<div class="card-section-title">\uD83D\uDED2 Achats (' + achats.length + ')</div>' +
+          achatsHtml +
+        '</div>' +
+      '</div>';
+    } catch(e) { return ''; }
+  }
+
+  /* ===== ACHATS PAGE ===== */
+  function renderAchats() {
+    try {
+      var el = document.getElementById('achatsList');
+      var projects = db.projects || [];
+      var html = '', any = false;
+      projects.forEach(function(p) {
+        var achats = p.purchases || []; if (!achats.length) return; any = true;
+        html += '<div class="achat-group"><div class="achat-group-title">' + statusEmoji(p.status) + ' ' + safeText(p.name) + '</div>';
+        achats.forEach(function(a, i) {
+          var cls = ({ abuy:'abuy', ordered:'ordered', received:'received' })[a.status] || 'abuy';
+          var lbl = ({ abuy:'A acheter', ordered:'Commande', received:'Recu' })[a.status] || 'A acheter';
+          html += '<div class="achat-item" data-swipe="achat" data-pid="' + p.id + '" data-aid="' + a.id + '">' +
+            '<div class="achat-name ' + (a.important ? 'important' : '') + '">' + safeText(a.name) + '</div>' +
+            '<div class="achat-qty">x' + (a.qty || 1) + '</div>' +
+            '<div class="imp-dot ' + (a.important ? 'on' : '') + '" onclick="toggleAchatImp(\'' + p.id + '\',' + i + ')"></div>' +
+            '<span class="achat-status ' + cls + '" onclick="cycleAchatStatus(\'' + p.id + '\',' + i + ')">' + lbl + '</span>' +
+          '</div>';
+        });
+        html += '</div>';
+      });
+      if (!any) html = '<div class="empty-state"><span class="emoji">\uD83D\uDED2</span>Aucun achat enregistre.<br>Ajoutez des articles depuis vos projets.</div>';
+      el.innerHTML = html;
+    } catch(e) {}
+  }
+
+  /* ===== ADMIN ===== */
+  function dueInfo(due) {
+    // retourne {label, cls} pour une echeance, ou null
+    try {
+      if (!due) return null;
+      var today = new Date(); today.setHours(0,0,0,0);
+      var d = new Date(due + 'T00:00:00');
+      if (isNaN(d.getTime())) return null;
+      var diff = Math.round((d - today) / 86400000);
+      var label = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      var cls = 'due-ok';
+      if (diff < 0) { cls = 'due-late'; label = 'En retard ' + label; }
+      else if (diff === 0) { cls = 'due-late'; label = "Aujourd'hui"; }
+      else if (diff <= 3) { cls = 'due-soon'; label = 'Dans ' + diff + 'j (' + label + ')'; }
+      else { label = label; }
+      return { label: label, cls: cls };
+    } catch(e) { return null; }
+  }
+
+  function renderAdmin() {
+    try {
+      var list = document.getElementById('adminList');
+      var items = (db.admin || []).slice();
+      // tri : non faits d'abord, importants en haut, puis par echeance
+      items.sort(function(a, b) {
+        if (a.done !== b.done) return a.done ? 1 : -1;
+        if (a.important !== b.important) return a.important ? -1 : 1;
+        if (a.due && b.due) return a.due < b.due ? -1 : 1;
+        if (a.due) return -1;
+        if (b.due) return 1;
+        return 0;
+      });
+      var html = '';
+      if (!items.length) {
+        html = '<div class="empty-state"><span class="emoji">\uD83D\uDCCC</span>Aucune tache admin.<br>Ajoutez-en une ci-dessous (ex: renvoyer la perceuse).</div>';
+      } else {
+        items.forEach(function(a) {
+          var di = dueInfo(a.due);
+          var dueHtml = di ? '<span class="admin-due ' + di.cls + '" onclick="clearAdminDue(\'' + a.id + '\')">\uD83D\uDCC5 ' + di.label + ' \u2715</span>' : '';
+          html += '<div class="admin-item ' + (a.important ? 'important' : '') + '" data-swipe="admin" data-aid="' + a.id + '">' +
+            '<div class="task-check ' + (a.done ? 'checked' : '') + '" onclick="toggleAdmin(\'' + a.id + '\')"></div>' +
+            '<div class="admin-main">' +
+              '<div class="admin-name ' + (a.done ? 'done' : '') + '">' + safeText(a.name) + '</div>' +
+              dueHtml +
+            '</div>' +
+            '<div class="star-btn ' + (a.star ? 'on' : '') + '" onclick="toggleAdminStar(\'' + a.id + '\')">\u2605</div>' +
+            '<div class="imp-dot ' + (a.important ? 'on' : '') + '" onclick="toggleAdminImp(\'' + a.id + '\')"></div>' +
+            '<button class="mini-btn" onclick="editAdminDue(\'' + a.id + '\')">\uD83D\uDCC5</button>' +
+            '<button class="mini-btn del" onclick="deleteAdmin(\'' + a.id + '\')">\u2715</button>' +
+          '</div>';
+        });
+      }
+      list.innerHTML = html;
+
+      // zone d'ajout
+      var area = document.getElementById('adminAddArea');
+      if (uiOpen.admin) {
+        area.innerHTML = '<div class="add-bar"><div class="add-line">' +
+          '<span class="add-tag">\uD83D\uDCCC</span>' +
+          '<input type="text" id="add-admin" class="add-input2" placeholder="Ex: renvoyer la perceuse..." onkeydown="handleAdminEnter(event)">' +
+          '<button class="add-go" onclick="addAdmin()">+</button>' +
+          '<button class="add-go cancel" onclick="closeAdminAdd()">\u2715</button>' +
+        '</div></div>';
+        setTimeout(function(){ var e = document.getElementById('add-admin'); if (e) e.focus(); }, 30);
+      } else {
+        area.innerHTML = '<div class="add-bar"><button class="add-plus" onclick="openAdminAdd()">+</button>' +
+          '<span class="admin-add-hint">Ajouter une tache admin</span></div>';
+      }
+    } catch(e) {}
+  }
+
+  function openAdminAdd() { try { uiOpen.admin = true; render(); } catch(e) {} }
+  window.openAdminAdd = openAdminAdd;
+  function closeAdminAdd() { try { delete uiOpen.admin; render(); } catch(e) {} }
+  window.closeAdminAdd = closeAdminAdd;
+  function addAdmin() {
+    try {
+      var inp = document.getElementById('add-admin'); if (!inp) return;
+      var v = (inp.value || '').trim();
+      if (!v) { closeAdminAdd(); return; }
+      db.admin = db.admin || [];
+      db.admin.push({ id: generateId(), name: v, done: false, star: false, important: false, due: '' });
+      saveData(db); uiOpen.admin = true; render();
+    } catch(e) { showToast('Erreur ajout'); }
+  }
+  window.addAdmin = addAdmin;
+  function handleAdminEnter(event) { try { if (event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); addAdmin(); } } catch(e) {} }
+  window.handleAdminEnter = handleAdminEnter;
+  function findAdmin(id) { try { return (db.admin || []).find(function(a){ return a.id === id; }) || null; } catch(e) { return null; } }
+  function toggleAdmin(id) { try { var a = findAdmin(id); if (!a) return; a.done = !a.done; if (a.done) a.star = false; saveData(db); render(); } catch(e) {} }
+  window.toggleAdmin = toggleAdmin;
+  function toggleAdminStar(id) { try { var a = findAdmin(id); if (!a) return; a.star = !a.star; saveData(db); render(); } catch(e) {} }
+  window.toggleAdminStar = toggleAdminStar;
+  function toggleAdminImp(id) { try { var a = findAdmin(id); if (!a) return; a.important = !a.important; saveData(db); render(); } catch(e) {} }
+  window.toggleAdminImp = toggleAdminImp;
+  function deleteAdmin(id) { try { db.admin = (db.admin || []).filter(function(a){ return a.id !== id; }); saveData(db); render(); } catch(e) {} }
+  window.deleteAdmin = deleteAdmin;
+  function editAdminDue(id) {
+    try {
+      var a = findAdmin(id); if (!a) return;
+      var picker = document.getElementById('datePicker');
+      if (!picker) return;
+      // pre-remplir : echeance existante, sinon date du jour
+      if (a.due) {
+        picker.value = a.due;
+      } else {
+        var t = new Date();
+        var mm = ('0' + (t.getMonth() + 1)).slice(-2);
+        var dd = ('0' + t.getDate()).slice(-2);
+        picker.value = t.getFullYear() + '-' + mm + '-' + dd;
+      }
+      pendingDueId = id;
+      // ouvrir le calendrier natif
+      if (picker.showPicker) { try { picker.showPicker(); } catch(e) { picker.click(); } }
+      else { picker.click(); }
+    } catch(e) {}
+  }
+  window.editAdminDue = editAdminDue;
+
+  function clearAdminDue(id) {
+    try { var a = findAdmin(id); if (!a) return; a.due = ''; saveData(db); render(); } catch(e) {}
+  }
+  window.clearAdminDue = clearAdminDue;
+  function render() {
+    try {
+      renderDashboard();
+      if (currentTab === 'today') renderToday();
+      else if (currentTab === 'projects') renderProjects();
+      else if (currentTab === 'admin') renderAdmin();
+      else if (currentTab === 'achats') renderAchats();
+      if (lastFocusId) {
+        var fid = lastFocusId; lastFocusId = null;
+        setTimeout(function(){ var e = document.getElementById(fid); if (e) e.focus(); }, 30);
+      }
+      bindSwipe();
+    } catch(e) {}
+  }
+
+  /* ===== NAVIGATION depuis l'onglet Jour ===== */
+  function goToProject(pid) {
+    try {
+      switchTab('projects');
+      setTimeout(function() {
+        var card = document.getElementById('card-' + pid);
+        if (!card) return;
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('flash');
+        setTimeout(function(){ card.classList.remove('flash'); }, 1500);
+      }, 80);
+    } catch(e) {}
+  }
+  window.goToProject = goToProject;
+
+  function deleteAchatById(pid, aid) {
+    try { var p = findProject(pid); if (!p) return; p.purchases = p.purchases.filter(function(a){ return a.id !== aid; }); saveData(db); render(); } catch(e) {}
+  }
+
+  /* ===== SWIPE TO DELETE ===== */
+  function performSwipeDelete(el) {
+    try {
+      var type = el.getAttribute('data-swipe');
+      if (type === 'task') deleteTask(el.getAttribute('data-pid'), el.getAttribute('data-tid'));
+      else if (type === 'achat') deleteAchatById(el.getAttribute('data-pid'), el.getAttribute('data-aid'));
+      else if (type === 'admin') deleteAdmin(el.getAttribute('data-aid'));
+    } catch(e) { render(); }
+  }
+
+  function bindSwipe() {
+    try {
+      var els = document.querySelectorAll('[data-swipe]');
+      for (var i = 0; i < els.length; i++) { setupSwipe(els[i]); }
+    } catch(e) {}
+  }
+
+  function setupSwipe(el) {
+    try {
+      var startX = 0, startY = 0, dx = 0, dragging = false, decided = false, horizontal = false;
+      el.addEventListener('touchstart', function(e) {
+        if (e.touches.length !== 1) return;
+        startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+        dx = 0; dragging = true; decided = false; horizontal = false;
+        el.style.transition = 'none';
+      }, { passive: true });
+      el.addEventListener('touchmove', function(e) {
+        if (!dragging) return;
+        var ddx = e.touches[0].clientX - startX;
+        var ddy = e.touches[0].clientY - startY;
+        if (!decided) {
+          if (Math.abs(ddx) > 8 || Math.abs(ddy) > 8) { decided = true; horizontal = Math.abs(ddx) > Math.abs(ddy); }
+        }
+        if (decided && horizontal) {
+          if (e.cancelable) e.preventDefault();
+          dx = Math.min(0, ddx);
+          el.style.transform = 'translateX(' + dx + 'px)';
+          if (dx < -80) el.classList.add('will-delete'); else el.classList.remove('will-delete');
+        }
+      }, { passive: false });
+      var finish = function() {
+        if (!dragging) return; dragging = false;
+        el.style.transition = 'transform .2s ease, opacity .2s ease';
+        if (dx < -80) {
+          el.style.transform = 'translateX(-110%)';
+          el.style.opacity = '0';
+          setTimeout(function(){ performSwipeDelete(el); }, 160);
+        } else {
+          el.style.transform = '';
+          el.classList.remove('will-delete');
+        }
+      };
+      el.addEventListener('touchend', finish);
+      el.addEventListener('touchcancel', finish);
+    } catch(e) {}
+  }
+
+  /* ===== PROJECT CRUD ===== */
+  function addProject() {
+    try {
+      var name = (document.getElementById('newProjectName').value || '').trim();
+      if (!name) { showToast('Donnez un nom au projet'); return; }
+      var status = document.getElementById('newProjectStatus').value || 'doing';
+      db.projects = db.projects || [];
+      db.projects.unshift({ id: generateId(), name: name, status: status, tasks: [], purchases: [] });
+      saveData(db); document.getElementById('newProjectName').value = ''; render(); showToast('Projet cree !');
+    } catch(e) { showToast('Erreur creation'); }
+  }
+  window.addProject = addProject;
+
+  function deleteProject(id) {
+    try { if (!confirm('Supprimer ce projet ?')) return; db.projects = (db.projects || []).filter(function(p){ return p.id !== id; }); saveData(db); render(); showToast('Projet supprime'); } catch(e) {}
+  }
+  window.deleteProject = deleteProject;
+
+  function cycleStatus(id) {
+    try { var p = findProject(id); if (!p) return; p.status = ({ todo:'doing', doing:'done', done:'todo' })[p.status] || 'todo'; saveData(db); render(); } catch(e) {}
+  }
+  window.cycleStatus = cycleStatus;
+
+  /* ===== EDIT MODAL ===== */
+  function openEdit(id) {
+    try { var p = findProject(id); if (!p) return; document.getElementById('editProjectId').value = id; document.getElementById('editProjectName').value = p.name; document.getElementById('editProjectStatus').value = p.status; document.getElementById('editModal').classList.add('open'); } catch(e) {}
+  }
+  window.openEdit = openEdit;
+  function closeModal() { try { document.getElementById('editModal').classList.remove('open'); } catch(e) {} }
+  window.closeModal = closeModal;
+  function saveEdit() {
+    try { var id = document.getElementById('editProjectId').value; var name = (document.getElementById('editProjectName').value || '').trim(); if (!name) { showToast('Nom requis'); return; } var p = findProject(id); if (!p) return; p.name = name; p.status = document.getElementById('editProjectStatus').value; saveData(db); closeModal(); render(); showToast('Projet modifie'); } catch(e) { showToast('Erreur modification'); }
+  }
+  window.saveEdit = saveEdit;
+
+  /* ===== TASKS ===== */
+  function toggleTask(pid, tid) { try { var p = findProject(pid); var t = findTask(p, tid); if (!t) return; t.done = !t.done; if (t.done) t.star = false; saveData(db); render(); } catch(e) {} }
+  window.toggleTask = toggleTask;
+  function toggleStar(pid, tid) { try { var p = findProject(pid); var t = findTask(p, tid); if (!t) return; t.star = !t.star; saveData(db); render(); } catch(e) {} }
+  window.toggleStar = toggleStar;
+  function deleteTask(pid, tid) { try { var p = findProject(pid); if (!p) return; p.tasks = p.tasks.filter(function(t){ return t.id !== tid; }); saveData(db); render(); } catch(e) {} }
+  window.deleteTask = deleteTask;
+  function toggleProjImp(pid) { try { var p = findProject(pid); if (!p) return; p.important = !p.important; saveData(db); render(); } catch(e) {} }
+  window.toggleProjImp = toggleProjImp;
+  function moveTask(pid, tid, dir) {
+    try { var p = findProject(pid); if (!p) return; var i = p.tasks.findIndex(function(t){ return t.id === tid; }); var j = i + dir; if (i < 0 || j < 0 || j >= p.tasks.length) return; var tmp = p.tasks[i]; p.tasks[i] = p.tasks[j]; p.tasks[j] = tmp; saveData(db); render(); } catch(e) {}
+  }
+  window.moveTask = moveTask;
+
+  /* ===== NOTES ===== */
+  function openNote(pid, tid) {
+    try { var p = findProject(pid); var t = findTask(p, tid); if (!t) return; var val = prompt('Note pour cette tache :', t.note || ''); if (val === null) return; t.note = val.trim(); saveData(db); render(); } catch(e) {}
+  }
+  window.openNote = openNote;
+
+  /* ===== SUBTASKS ===== */
+  function toggleSub(pid, tid, sid) { try { var p = findProject(pid); var t = findTask(p, tid); if (!t) return; var s = t.subtasks.find(function(x){ return x.id === sid; }); if (!s) return; s.done = !s.done; saveData(db); render(); } catch(e) {} }
+  window.toggleSub = toggleSub;
+  function deleteSub(pid, tid, sid) { try { var p = findProject(pid); var t = findTask(p, tid); if (!t) return; t.subtasks = t.subtasks.filter(function(x){ return x.id !== sid; }); saveData(db); render(); } catch(e) {} }
+  window.deleteSub = deleteSub;
+
+  /* ===== ACHATS ===== */
+  function cycleAchatStatus(pid, index) { try { var p = findProject(pid); if (!p || !p.purchases[index]) return; p.purchases[index].status = ({ abuy:'ordered', ordered:'received', received:'abuy' })[p.purchases[index].status] || 'abuy'; saveData(db); render(); } catch(e) {} }
+  window.cycleAchatStatus = cycleAchatStatus;
+  function toggleAchatImp(pid, index) { try { var p = findProject(pid); if (!p || !p.purchases[index]) return; p.purchases[index].important = !p.purchases[index].important; saveData(db); render(); } catch(e) {} }
+  window.toggleAchatImp = toggleAchatImp;
+  function deleteAchat(pid, index) { try { var p = findProject(pid); if (!p) return; p.purchases.splice(index, 1); saveData(db); render(); } catch(e) {} }
+  window.deleteAchat = deleteAchat;
+
+  function shareShoppingList() {
+    try {
+      var lines = ['\uD83D\uDED2 Liste de courses', ''];
+      var count = 0;
+      (db.projects || []).forEach(function(p) {
+        if (p.status === 'done') return;
+        var items = (p.purchases || []).filter(function(a){ return a.status !== 'received'; });
+        if (!items.length) return;
+        lines.push(safeTextPlain(p.name) + ' :');
+        items.forEach(function(a) {
+          var star = a.important ? '\u2757 ' : '';
+          var qty = (a.qty && a.qty > 1) ? ' (x' + a.qty + ')' : '';
+          lines.push('- ' + star + safeTextPlain(a.name) + qty);
+          count++;
+        });
+        lines.push('');
+      });
+      if (!count) { showToast('Aucun article a acheter'); return; }
+      var text = lines.join('\n').trim();
+
+      if (navigator.share) {
+        navigator.share({ title: 'Liste de courses', text: text }).catch(function(){});
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function(){ showToast('Liste copiee !'); }).catch(function(){ fallbackCopy(text); });
+      } else {
+        fallbackCopy(text);
+      }
+    } catch(e) { showToast('Erreur partage'); }
+  }
+  window.shareShoppingList = shareShoppingList;
+
+  function safeTextPlain(s) { return String(s || ''); }
+  function fallbackCopy(text) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); showToast('Liste copiee !'); } catch(e) { window.prompt('Copiez votre liste :', text); }
+      document.body.removeChild(ta);
+    } catch(e) { window.prompt('Copiez votre liste :', text); }
+  }
+
+  /* ===== AI (Gemini + secours auto) ===== */
+  var AI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash-lite'];
+  var AI_MAX_RETRY = 2;
+  function aiStopLoading(pid) { try { var b = document.getElementById('ai-btn-' + pid); if (b) b.classList.remove('loading'); } catch(e) {} }
+  function isOverloadError(httpStatus, data) {
+    try {
+      if (httpStatus === 503 || httpStatus === 429) return true;
+      var msg = (data && data.error && data.error.message) ? data.error.message.toLowerCase() : '';
+      var st = (data && data.error && data.error.status) ? String(data.error.status).toUpperCase() : '';
+      if (st === 'UNAVAILABLE' || st === 'RESOURCE_EXHAUSTED') return true;
+      if (msg.indexOf('overload') >= 0 || msg.indexOf('high demand') >= 0 || msg.indexOf('try again') >= 0) return true;
+      return false;
+    } catch(e) { return false; }
+  }
+  function callAI(pid) {
+    try {
+      var p = findProject(pid); if (!p) return;
+      var apiKey = getApiKey();
+      if (!apiKey) { showAIMsg(pid, 'error', 'Sauvegardez d\'abord votre cle API Google en haut de l\'ecran.'); return; }
+      var btn = document.getElementById('ai-btn-' + pid); if (btn) btn.classList.add('loading');
+      showAIMsg(pid, 'loading', 'Generation en cours...');
+
+      var prompt = 'Agis comme un expert en bricolage et renovation. Pour le projet "' + p.name +
+        '", genere une liste d\'etapes de travail et de materiel necessaire. ' +
+        'Reponds UNIQUEMENT avec un objet JSON valide, sans texte avant ni apres, sans balises markdown, sans triple backtick. ' +
+        'Format exact : {"tasks":["Etape 1","Etape 2"],"purchases":[{"name":"Article","qty":1}]}';
+
+      var body = JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 2048, temperature: 0.7, responseMimeType: 'application/json', thinkingConfig: { thinkingBudget: 0 } }
+      });
+
+      function tryModel(modelIndex, attempt) {
+        if (modelIndex >= AI_MODELS.length) { aiStopLoading(pid); showAIMsg(pid, 'error', 'Tous les modeles sont occupes. Reessayez dans une minute.'); return; }
+        var model = AI_MODELS[modelIndex];
+        if (modelIndex > 0 || attempt > 0) showAIMsg(pid, 'loading', 'Modele occupe, nouvel essai (' + model + ')...');
+        var httpStatus = 0;
+        fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + encodeURIComponent(apiKey), {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body
+        })
+        .then(function(res){ httpStatus = res.status; return res.json(); })
+        .then(function(data) {
+          try {
+            if (isOverloadError(httpStatus, data)) {
+              if (attempt < AI_MAX_RETRY) setTimeout(function(){ tryModel(modelIndex, attempt + 1); }, 1200 * (attempt + 1));
+              else setTimeout(function(){ tryModel(modelIndex + 1, 0); }, 600);
+              return;
+            }
+            if (data.error) { aiStopLoading(pid); showAIMsg(pid, 'error', (data.error.message || 'Erreur API inconnue')); return; }
+            var raw = '', finishReason = '';
+            if (data.candidates && data.candidates[0]) {
+              finishReason = data.candidates[0].finishReason || '';
+              if (data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) raw = data.candidates[0].content.parts[0].text || '';
+            }
+            raw = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
+            var jsonMatch = raw.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) { if (finishReason && finishReason !== 'STOP') throw new Error('Reponse coupee (' + finishReason + ')'); throw new Error('Aucun JSON trouve'); }
+            var parsed = JSON.parse(jsonMatch[0]);
+            var proj = findProject(pid); if (!proj) throw new Error('Projet introuvable');
+            var added = { tasks: 0, purchases: 0 };
+            if (Array.isArray(parsed.tasks)) parsed.tasks.forEach(function(t){ if (t && typeof t === 'string') { proj.tasks.push({ id: generateId(), name: t.trim(), done: false, star: false, important: false, note: '', subtasks: [] }); added.tasks++; } });
+            if (Array.isArray(parsed.purchases)) parsed.purchases.forEach(function(a){ if (a && a.name) { proj.purchases.push({ id: generateId(), name: String(a.name).trim(), qty: parseInt(a.qty, 10) || 1, status: 'abuy', important: false }); added.purchases++; } });
+            saveData(db); aiStopLoading(pid);
+            showAIMsg(pid, 'success', '+' + added.tasks + ' tache(s) et +' + added.purchases + ' achat(s) ajoute(s) !');
+            render(); setTimeout(function(){ hideAIMsg(pid); }, 4000);
+          } catch(innerErr) { aiStopLoading(pid); showAIMsg(pid, 'error', 'Reponse IA illisible : ' + (innerErr.message || '')); }
+        })
+        .catch(function(err) {
+          if (attempt < AI_MAX_RETRY) setTimeout(function(){ tryModel(modelIndex, attempt + 1); }, 1200 * (attempt + 1));
+          else if (modelIndex + 1 < AI_MODELS.length) setTimeout(function(){ tryModel(modelIndex + 1, 0); }, 600);
+          else { aiStopLoading(pid); showAIMsg(pid, 'error', 'Erreur reseau : ' + (err.message || 'inconnu')); }
+        });
+      }
+      tryModel(0, 0);
+    } catch(e) { showToast('Erreur IA'); }
+  }
+  window.callAI = callAI;
+  function showAIMsg(pid, type, msg) { try { var el = document.getElementById('ai-msg-' + pid); if (!el) return; el.className = 'ai-msg ' + type + ' show'; el.textContent = msg; } catch(e) {} }
+  function hideAIMsg(pid) { try { var el = document.getElementById('ai-msg-' + pid); if (!el) return; el.classList.remove('show'); } catch(e) {} }
+
+  /* ===== EVENTS ===== */
+  try { document.getElementById('editModal').addEventListener('click', function(e){ if (e.target === this) closeModal(); }); } catch(e) {}
+  try { document.getElementById('newProjectName').addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.keyCode === 13) addProject(); }); } catch(e) {}
+  try {
+    document.getElementById('datePicker').addEventListener('change', function() {
+      try {
+        if (!pendingDueId) return;
+        var a = findAdmin(pendingDueId); pendingDueId = null;
+        if (!a) return;
+        var v = (this.value || '').trim();
+        if (v && /^\d{4}-\d{2}-\d{2}$/.test(v)) { a.due = v; saveData(db); render(); }
+      } catch(e) {}
+    });
+  } catch(e) {}
+
+  /* ===== INIT ===== */
+  try { var k = getApiKey(); if (k) document.getElementById('apiKeyInput').value = k; } catch(e) {}
+  migrate();
+  render();
+
+})();
+</script>
+</body>
+</html>
